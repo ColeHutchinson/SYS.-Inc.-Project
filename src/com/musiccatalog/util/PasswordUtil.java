@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Utility class for password hashing.
  * Uses MD5 for simplicity in this prototype.
+ * MD5 research done through https://dbcode.io/docs/sql/md5
  */
 public class PasswordUtil {
 

@@ -35,34 +35,16 @@ Download `sqlite-jdbc-3.45.1.0.jar` from:
 ```
 https://github.com/xerial/sqlite-jdbc/releases/download/3.45.1.0/sqlite-jdbc-3.45.1.0.jar
 ```
+Go to File → Project Structure
 
-Place it in the `lib/` folder:
+Click Libraries
 
-```
-MusicCatalog/
-  lib/
-    sqlite-jdbc-3.45.1.0.jar   ← here
-  src/
-  run.sh
-  run.bat
-```
+Click +
 
-### 2. Run (Linux / macOS)
+Select Java
 
-```bash
-chmod +x run.sh
-./run.sh
-```
+Choose the downloaded file: (sqlite-jdbc-3.46.0.0.jar)
 
-### 3. Run (Windows)
-
-```batch
-run.bat
-```
-
-The script will compile all sources and launch the app automatically.
-
----
 
 ## Default Login Credentials
 
@@ -95,9 +77,6 @@ MusicCatalog/
 │           ├── CatalogWindow.java     ← Main window
 │           ├── SongTableModel.java    ← JTable model
 │           └── SongFormDialog.java    ← Add / Edit song form
-├── lib/                               ← Put sqlite-jdbc JAR here
-├── run.sh                             ← Linux/Mac build + run
-├── run.bat                            ← Windows build + run
 ├── build.xml                          ← Apache Ant build file
 └── README.md
 ```
