@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MusicCatalog" default="run" basedir=".">
+
+    <property name="src.dir"     value="src"/>
+    <property name="build.dir"   value="out"/>
+    <property name="lib.dir"     value="lib"/>
+    <property name="jar.file"    value="MusicCatalog.jar"/>
+    <property name="main.class"  value="com.musiccatalog.Main"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+
+    <target name="clean" description="Remove build artifacts">
+        <delete dir="${build.dir}"/>
+        <delete file="${jar.file}"/>
+    </target>
+
+    <target name="compile" description="Compile all source files">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${build.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17" target="17"/>
+    </target>
+
+    <target name="jar" depends="compile" description="Package into runnable JAR">
+        <jar destfile="${jar.file}" basedir="${build.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="lib/sqlite-jdbc-3.45.1.0.jar"/>
+            </manifest>
+        </jar>
+        <echo message="JAR created: ${jar.file}"/>
+    </target>
+
+    <target name="run" depends="compile" description="Compile and run">
+        <java classname="${main.class}" classpathref="classpath" fork="true">
+            <classpath>
+                <pathelement path="${build.dir}"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+</project>
