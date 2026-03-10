@@ -33,7 +33,7 @@ A Java Swing desktop application for browsing and managing a music catalog with 
 Download `sqlite-jdbc-3.45.1.0.jar` from:
 
 ```
-https://github.com/xerial/sqlite-jdbc/releases/download/3.45.1.0/sqlite-jdbc-3.45.1.0.jar
+https://github.com/xerial/sqlite-jdbc/releases/download/3.51.2.0/sqlite-jdbc-3.51.2.0.jar
 ```
 Go to File → Project Structure
 
