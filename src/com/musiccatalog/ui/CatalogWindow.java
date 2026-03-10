@@ -70,7 +70,7 @@ public class CatalogWindow extends JFrame {
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setFocusPainted(false);
         logoutBtn.setBackground(new Color(200, 60, 60));
-        logoutBtn.setForeground(Color.WHITE);
+        logoutBtn.setForeground(Color.BLACK);
         logoutBtn.setBorder(new EmptyBorder(5, 12, 5, 12));
         logoutBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         logoutBtn.addActionListener(e -> logout());
@@ -122,7 +122,7 @@ public class CatalogWindow extends JFrame {
 
         JButton applyBtn = new JButton("Apply");
         applyBtn.setBackground(new Color(50, 120, 200));
-        applyBtn.setForeground(Color.WHITE);
+        applyBtn.setForeground(Color.BLACK);
         applyBtn.addActionListener(e -> loadSongs());
         toolbar.add(applyBtn);
 
@@ -139,7 +139,7 @@ public class CatalogWindow extends JFrame {
         // Add song button
         JButton addBtn = new JButton("+ Add Song");
         addBtn.setBackground(new Color(40, 160, 80));
-        addBtn.setForeground(Color.WHITE);
+        addBtn.setForeground(Color.BLACK);
         addBtn.addActionListener(e -> openAddSongDialog());
         toolbar.add(addBtn);
 

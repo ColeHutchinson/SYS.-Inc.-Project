@@ -89,7 +89,7 @@ public class LoginDialog extends JDialog {
         gbc.gridy = 3;
         JButton loginBtn = new JButton("Login");
         loginBtn.setBackground(new Color(50, 120, 200));
-        loginBtn.setForeground(Color.WHITE);
+        loginBtn.setForeground(Color.BLACK);
         loginBtn.setFont(new Font("SansSerif", Font.BOLD, 13));
         loginBtn.setPreferredSize(new Dimension(200, 36));
         loginBtn.addActionListener(e -> doLogin());

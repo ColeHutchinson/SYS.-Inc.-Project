@@ -64,7 +64,7 @@ public class SongFormDialog extends JDialog {
 
         JButton saveBtn = new JButton(isEdit ? "Save Changes" : "Add Song");
         saveBtn.setBackground(new Color(50, 120, 200));
-        saveBtn.setForeground(Color.WHITE);
+        saveBtn.setForeground(Color.BLACK);
         saveBtn.addActionListener(e -> doSave(song));
 
         btnPanel.add(cancelBtn);
