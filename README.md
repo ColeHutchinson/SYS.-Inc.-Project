@@ -22,7 +22,7 @@ A Java Swing desktop application for browsing and managing a music catalog with 
 | Requirement | Version |
 |-------------|---------|
 | Java JDK    | 17+     |
-| SQLite JDBC | 3.45.x  |
+| SQLite JDBC | 3.51.x   |
 
 ---
 
@@ -30,7 +30,7 @@ A Java Swing desktop application for browsing and managing a music catalog with 
 
 ### 1. Download the SQLite JDBC Driver
 
-Download `sqlite-jdbc-3.45.1.0.jar` from:
+Download `sqlite-jdbc-3.51.2.0.jar` from:
 
 ```
 https://github.com/xerial/sqlite-jdbc/releases/download/3.51.2.0/sqlite-jdbc-3.51.2.0.jar
@@ -43,7 +43,7 @@ Click +
 
 Select Java
 
-Choose the downloaded file: (sqlite-jdbc-3.46.0.0.jar)
+Choose the downloaded file: (sqlite-jdbc-3.51.2.0.jar)
 
 
 ## Default Login Credentials
@@ -91,5 +91,10 @@ songs          — id, title, artist, album, duration_seconds, genre, release_ye
 playlists      — id, user_id, name, description, created_at        (ready for future use)
 playlist_songs — playlist_id, song_id, position, added_at          (ready for future use)
 ```
+
+---
+
+![Class Diagram](resource root/ClassDiagram.webp)
+![Sequence Diagram](resource root/SequenceDiagram.webp)
 
 ---
