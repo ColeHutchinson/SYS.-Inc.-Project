@@ -94,7 +94,7 @@ playlist_songs — playlist_id, song_id, position, added_at          (ready for 
 
 ---
 
-![Class Diagram](resource root/ClassDiagram.webp)
-![Sequence Diagram](resource root/SequenceDiagram.webp)
+![Class Diagram](resource%20root/ClassDiagram.png)
+![Sequence Diagram](resource%20root/SequenceDiagram.png)
 
 ---
