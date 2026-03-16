@@ -1,5 +1,6 @@
 package com.musiccatalog.ui;
 
+import com.musiccatalog.dao.PlaylistDAO;
 import com.musiccatalog.dao.SongDAO;
 import com.musiccatalog.dao.SongDAO.SortField;
 import com.musiccatalog.dao.SongDAO.SortOrder;
@@ -22,6 +23,11 @@ public class CatalogWindow extends JFrame {
 
     private final User currentUser;
     private final SongDAO songDAO = new SongDAO();
+    private final PlaylistDAO playlistDAO = new PlaylistDAO();
+
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
+    private PlaylistMenuPanel playlistMenuPanel;
 
     private SongTableModel tableModel;
     private JTable songTable;
@@ -47,11 +53,66 @@ public class CatalogWindow extends JFrame {
     private void buildUI() {
         JPanel root = new JPanel(new BorderLayout(0, 0));
 
-        root.add(buildHeader(), BorderLayout.NORTH);
-        root.add(buildToolbar(), BorderLayout.CENTER);  // holds toolbar + table together
+        // North section: header + nav bar stacked
+        JPanel northSection = new JPanel(new BorderLayout());
+        northSection.add(buildHeader(), BorderLayout.NORTH);
+        northSection.add(buildNavBar(), BorderLayout.SOUTH);
+        root.add(northSection, BorderLayout.NORTH);
+
+        // Center: card panel switching between library and playlists
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+        playlistMenuPanel = new PlaylistMenuPanel(currentUser, playlistDAO);
+        cardPanel.add(buildToolbar(), "library");
+        cardPanel.add(playlistMenuPanel, "playlists");
+        root.add(cardPanel, BorderLayout.CENTER);
+
         root.add(buildStatusBar(), BorderLayout.SOUTH);
 
         setContentPane(root);
+    }
+
+    private JPanel buildNavBar() {
+        JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        navBar.setBackground(new Color(22, 22, 34));
+
+        JButton libraryBtn = new JButton("Song Library");
+        JButton playlistsBtn = new JButton("Playlist Menu");
+
+        styleNavButton(libraryBtn, true);
+        styleNavButton(playlistsBtn, false);
+
+        libraryBtn.addActionListener(e -> {
+            cardLayout.show(cardPanel, "library");
+            styleNavButton(libraryBtn, true);
+            styleNavButton(playlistsBtn, false);
+        });
+
+        playlistsBtn.addActionListener(e -> {
+            cardLayout.show(cardPanel, "playlists");
+            styleNavButton(playlistsBtn, true);
+            styleNavButton(libraryBtn, false);
+            playlistMenuPanel.refresh();
+        });
+
+        navBar.add(libraryBtn);
+        navBar.add(playlistsBtn);
+        return navBar;
+    }
+
+    private void styleNavButton(JButton btn, boolean active) {
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(8, 18, 8, 18));
+        if (active) {
+            btn.setBackground(new Color(50, 120, 200));
+            btn.setForeground(Color.WHITE);
+        } else {
+            btn.setBackground(new Color(22, 22, 34));
+            btn.setForeground(new Color(160, 160, 190));
+        }
     }
 
     private JPanel buildHeader() {
