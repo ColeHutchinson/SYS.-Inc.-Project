@@ -156,7 +156,7 @@ public class LoginDialog extends JDialog {
         gbc.gridy = 5;
         JButton regBtn = new JButton("Create Account");
         regBtn.setBackground(new Color(40, 160, 80));
-        regBtn.setForeground(Color.WHITE);
+        regBtn.setForeground(Color.BLACK);
         regBtn.setFont(new Font("SansSerif", Font.BOLD, 13));
         regBtn.setPreferredSize(new Dimension(200, 36));
         regBtn.addActionListener(e -> doRegister());
