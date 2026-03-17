@@ -63,11 +63,12 @@ public class UserDAO {
         if (findByUsername(username) != null) {
             return false; // Username taken
         }
-        String sql = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, password_hash, email, role) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, username);
             ps.setString(2, PasswordUtil.hash(password));
             ps.setString(3, email);
+            ps.setString(4, "USER");
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -96,7 +97,8 @@ public class UserDAO {
             rs.getString("username"),
             rs.getString("password_hash"),
             rs.getString("email"),
-            rs.getString("created_at")
+            rs.getString("created_at"),
+            rs.getString("role")
         );
     }
 }

@@ -6,15 +6,17 @@ public class User {
     private String passwordHash;
     private String email;
     private String createdAt;
+    private String role;
 
     public User() {}
 
-    public User(int id, String username, String passwordHash, String email, String createdAt) {
+    public User(int id, String username, String passwordHash, String email, String createdAt, String role) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.email = email;
         this.createdAt = createdAt;
+        this.role = role;
     }
 
     public int getId() { return id; }
@@ -32,8 +34,15 @@ public class User {
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public boolean isAdmin() {
+        return role != null && role.equalsIgnoreCase("ADMIN");
+    }
+
     @Override
     public String toString() {
-        return "User{id=" + id + ", username='" + username + "', email='" + email + "'}";
+        return "User{id=" + id + ", username='" + username + "', email='" + email + "', role='" + role + "'}";
     }
 }

@@ -360,6 +360,13 @@ public class CatalogWindow extends JFrame {
     }
 
     private void openAddSongDialog() {
+        if (!currentUser.isAdmin()) {
+            JOptionPane.showMessageDialog(this,
+                "Permission denied. Admin access required to add songs.",
+                "Permission Denied",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         SongFormDialog dialog = new SongFormDialog(this, null);
         dialog.setVisible(true);
         Song result = dialog.getResult();
@@ -371,6 +378,13 @@ public class CatalogWindow extends JFrame {
     }
 
     private void openEditSongDialog() {
+        if (!currentUser.isAdmin()) {
+            JOptionPane.showMessageDialog(this,
+                "Permission denied. Admin access required to edit songs.",
+                "Permission Denied",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         int selectedRow = songTable.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this, "Please select a song to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
@@ -387,6 +401,13 @@ public class CatalogWindow extends JFrame {
     }
 
     private void deleteSelectedSong() {
+        if (!currentUser.isAdmin()) {
+            JOptionPane.showMessageDialog(this,
+                "Permission denied. Admin access required to delete songs.",
+                "Permission Denied",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         int selectedRow = songTable.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this, "Please select a song to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);

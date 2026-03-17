@@ -59,9 +59,11 @@ public class DatabaseManager {
                     username TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     email TEXT NOT NULL UNIQUE,
-                    created_at TEXT DEFAULT (datetime('now'))
+                    created_at TEXT DEFAULT (datetime('now')),
+                    role TEXT NOT NULL DEFAULT 'USER'
                 )
             """);
+            ensureUserRoleColumn(stmt);
 
             // Songs table
             stmt.executeUpdate("""
@@ -155,16 +157,26 @@ public class DatabaseManager {
 
         // Default admin user (password: "admin123")
         stmt.executeUpdate("""
-            INSERT OR IGNORE INTO users (username, password_hash, email)
-            VALUES ('admin', '0192023a7bbd73250516f069df18b500', 'admin@musiccatalog.com')
+            INSERT OR IGNORE INTO users (username, password_hash, email, role)
+            VALUES ('admin', '0192023a7bbd73250516f069df18b500', 'admin@musiccatalog.com', 'ADMIN')
         """);
 
         // Default demo user (password: "demo")
         stmt.executeUpdate("""
-            INSERT OR IGNORE INTO users (username, password_hash, email)
-            VALUES ('demo', 'fe01ce2a7fbac8fafaed7c982a04e229', 'demo@musiccatalog.com')
+            INSERT OR IGNORE INTO users (username, password_hash, email, role)
+            VALUES ('demo', 'fe01ce2a7fbac8fafaed7c982a04e229', 'demo@musiccatalog.com', 'USER')
         """);
 
         System.out.println("Sample data seeded.");
+    }
+
+    private void ensureUserRoleColumn(Statement stmt) throws SQLException {
+        try {
+            stmt.executeUpdate("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'USER'");
+        } catch (SQLException e) {
+            // Column already exists or cannot be added; ignore.
+        }
+        stmt.executeUpdate("UPDATE users SET role = 'USER' WHERE role IS NULL OR role = ''");
+        stmt.executeUpdate("UPDATE users SET role = 'ADMIN' WHERE username = 'admin'");
     }
 }
