@@ -10,7 +10,7 @@ public class Song {
     private int releaseYear;
     private String addedAt;
 
-    public Song() {}
+    public Song(int i, String blindingLights, String theWeeknd, String afterHours, int i1) {}
 
     public Song(int id, String title, String artist, String album,
                 int durationSeconds, String genre, int releaseYear, String addedAt) {

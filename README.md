@@ -98,4 +98,7 @@ playlist_songs — playlist_id, song_id, position, added_at          (ready for 
 
 ![Sequence Diagram](resource%20root/SequenceDiagram.png)
 
+![Sequence Diagram](resource%20root/StateChartDiagram.png)
+
+
 ---
