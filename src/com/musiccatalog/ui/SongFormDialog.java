@@ -12,14 +12,28 @@ import java.awt.*;
 public class SongFormDialog extends JDialog {
 
     private final boolean isEdit;
+    private final String submitLabel;
+    private final boolean suggestionOnly;
     private Song result = null;
 
     private JTextField titleField, artistField, albumField, genreField, yearField;
     private JTextField minutesField, secondsField;
 
     public SongFormDialog(Frame parent, Song songToEdit) {
-        super(parent, songToEdit == null ? "Add Song" : "Edit Song", true);
+        this(parent, songToEdit, null, null, false);
+    }
+
+    public SongFormDialog(Frame parent, Song songToEdit, String dialogTitle, String submitLabel) {
+        this(parent, songToEdit, dialogTitle, submitLabel, false);
+    }
+
+    public SongFormDialog(Frame parent, Song songToEdit, String dialogTitle, String submitLabel, boolean suggestionOnly) {
+        super(parent,
+            dialogTitle != null ? dialogTitle : (songToEdit == null ? "Add Song" : "Edit Song"),
+            true);
         this.isEdit = (songToEdit != null);
+        this.submitLabel = submitLabel;
+        this.suggestionOnly = suggestionOnly;
         buildUI(songToEdit);
         pack();
         setResizable(false);
@@ -41,19 +55,21 @@ public class SongFormDialog extends JDialog {
         // Title
         addRow(form, gbc, row++, "Title *", titleField = new JTextField(25));
         addRow(form, gbc, row++, "Artist *", artistField = new JTextField(25));
-        addRow(form, gbc, row++, "Album", albumField = new JTextField(25));
-        addRow(form, gbc, row++, "Genre", genreField = new JTextField(25));
-        addRow(form, gbc, row++, "Year", yearField = new JTextField(10));
+        if (!suggestionOnly) {
+            addRow(form, gbc, row++, "Album", albumField = new JTextField(25));
+            addRow(form, gbc, row++, "Genre", genreField = new JTextField(25));
+            addRow(form, gbc, row++, "Year", yearField = new JTextField(10));
 
-        // Duration row
-        JPanel durPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        minutesField = new JTextField(4);
-        secondsField = new JTextField(4);
-        durPanel.add(minutesField);
-        durPanel.add(new JLabel("min"));
-        durPanel.add(secondsField);
-        durPanel.add(new JLabel("sec"));
-        addRow(form, gbc, row++, "Duration *", durPanel);
+            // Duration row
+            JPanel durPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            minutesField = new JTextField(4);
+            secondsField = new JTextField(4);
+            durPanel.add(minutesField);
+            durPanel.add(new JLabel("min"));
+            durPanel.add(secondsField);
+            durPanel.add(new JLabel("sec"));
+            addRow(form, gbc, row++, "Duration *", durPanel);
+        }
 
         root.add(form, BorderLayout.CENTER);
 
@@ -62,7 +78,8 @@ public class SongFormDialog extends JDialog {
         JButton cancelBtn = new JButton("Cancel");
         cancelBtn.addActionListener(e -> dispose());
 
-        JButton saveBtn = new JButton(isEdit ? "Save Changes" : "Add Song");
+        String resolvedLabel = submitLabel != null ? submitLabel : (isEdit ? "Save Changes" : "Add Song");
+        JButton saveBtn = new JButton(resolvedLabel);
         saveBtn.setBackground(new Color(50, 120, 200));
         saveBtn.setForeground(Color.BLACK);
         saveBtn.addActionListener(e -> doSave(song));
@@ -72,7 +89,7 @@ public class SongFormDialog extends JDialog {
         root.add(btnPanel, BorderLayout.SOUTH);
 
         // Prefill if editing
-        if (song != null) {
+        if (song != null && !suggestionOnly) {
             titleField.setText(song.getTitle());
             artistField.setText(song.getArtist());
             albumField.setText(song.getAlbum() != null ? song.getAlbum() : "");
@@ -95,44 +112,46 @@ public class SongFormDialog extends JDialog {
     private void doSave(Song original) {
         String title = titleField.getText().trim();
         String artist = artistField.getText().trim();
-        String album = albumField.getText().trim();
-        String genre = genreField.getText().trim();
-        String yearStr = yearField.getText().trim();
-        String minsStr = minutesField.getText().trim();
-        String secsStr = secondsField.getText().trim();
+        String album = suggestionOnly ? "" : albumField.getText().trim();
+        String genre = suggestionOnly ? "" : genreField.getText().trim();
+        String yearStr = suggestionOnly ? "" : yearField.getText().trim();
+        String minsStr = suggestionOnly ? "" : minutesField.getText().trim();
+        String secsStr = suggestionOnly ? "" : secondsField.getText().trim();
 
         if (title.isEmpty() || artist.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Title and Artist are required.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int durationSeconds;
-        try {
-            int mins = minsStr.isEmpty() ? 0 : Integer.parseInt(minsStr);
-            int secs = secsStr.isEmpty() ? 0 : Integer.parseInt(secsStr);
-            durationSeconds = mins * 60 + secs;
-            if (durationSeconds <= 0) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid duration.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
+        int durationSeconds = 0;
         int year = 0;
-        if (!yearStr.isEmpty()) {
+        if (!suggestionOnly) {
             try {
-                year = Integer.parseInt(yearStr);
+                int mins = minsStr.isEmpty() ? 0 : Integer.parseInt(minsStr);
+                int secs = secsStr.isEmpty() ? 0 : Integer.parseInt(secsStr);
+                durationSeconds = mins * 60 + secs;
+                if (durationSeconds <= 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid year.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please enter a valid duration.", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
+            }
+
+            if (!yearStr.isEmpty()) {
+                try {
+                    year = Integer.parseInt(yearStr);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid year.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
             }
         }
 
         result = new Song(
             original != null ? original.getId() : 0,
             title, artist,
-            album.isEmpty() ? null : album,
+            (suggestionOnly || album.isEmpty()) ? null : album,
             durationSeconds,
-            genre.isEmpty() ? null : genre,
+            (suggestionOnly || genre.isEmpty()) ? null : genre,
             year, null
         );
         dispose();

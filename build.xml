@@ -4,12 +4,20 @@
     <property name="src.dir"     value="src"/>
     <property name="build.dir"   value="out"/>
     <property name="lib.dir"     value="lib"/>
+    <property name="test.src.dir" value="src/test/java"/>
+    <property name="test.build.dir" value="out/test"/>
     <property name="jar.file"    value="MusicCatalog.jar"/>
     <property name="main.class"  value="com.musiccatalog.Main"/>
 
     <path id="classpath">
-        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <fileset dir="${lib.dir}" includes="*.jar" erroronmissingdir="false"/>
     </path>
+    <path id="test.classpath">
+        <pathelement path="${build.dir}"/>
+        <pathelement path="${test.build.dir}"/>
+        <fileset dir="${lib.dir}" includes="*.jar" erroronmissingdir="false"/>
+    </path>
+    <pathconvert property="test.classpath.string" refid="test.classpath" pathsep=";"/>
 
     <target name="clean" description="Remove build artifacts">
         <delete dir="${build.dir}"/>
@@ -21,8 +29,32 @@
         <javac srcdir="${src.dir}"
                destdir="${build.dir}"
                classpathref="classpath"
+               excludes="test/**"
                includeantruntime="false"
                source="17" target="17"/>
+    </target>
+
+    <target name="compile-tests" depends="compile" description="Compile test files">
+        <mkdir dir="${test.build.dir}"/>
+        <javac srcdir="${test.src.dir}"
+               destdir="${test.build.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17" target="17">
+            <classpath>
+                <pathelement path="${build.dir}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile-tests" description="Run unit tests">
+        <java jar="${lib.dir}/junit-platform-console-standalone-1.11.3.jar"
+              fork="true"
+              failonerror="true">
+            <arg value="--class-path"/>
+            <arg value="${test.classpath.string}"/>
+            <arg value="--scan-classpath"/>
+        </java>
     </target>
 
     <target name="jar" depends="compile" description="Package into runnable JAR">

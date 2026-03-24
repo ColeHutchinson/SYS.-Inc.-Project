@@ -104,6 +104,26 @@ public class DatabaseManager {
                 )
             """);
 
+            // Song suggestions table
+            stmt.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS song_suggestions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    artist TEXT NOT NULL,
+                    album TEXT,
+                    duration_seconds INTEGER NOT NULL,
+                    genre TEXT,
+                    release_year INTEGER,
+                    suggested_by INTEGER NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    suggested_at TEXT DEFAULT (datetime('now')),
+                    reviewed_at TEXT,
+                    reviewed_by INTEGER,
+                    FOREIGN KEY (suggested_by) REFERENCES users(id),
+                    FOREIGN KEY (reviewed_by) REFERENCES users(id)
+                )
+            """);
+
             seedSampleData(stmt);
 
             System.out.println("Database initialized successfully.");

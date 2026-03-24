@@ -4,8 +4,10 @@ import com.musiccatalog.dao.PlaylistDAO;
 import com.musiccatalog.dao.SongDAO;
 import com.musiccatalog.dao.SongDAO.SortField;
 import com.musiccatalog.dao.SongDAO.SortOrder;
+import com.musiccatalog.dao.SongSuggestionDAO;
 import com.musiccatalog.model.Song;
 import com.musiccatalog.model.User;
+import com.musiccatalog.service.SongSubmissionService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,6 +26,8 @@ public class CatalogWindow extends JFrame {
     private final User currentUser;
     private final SongDAO songDAO = new SongDAO();
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
+    private final SongSubmissionService submissionService =
+        new SongSubmissionService(songDAO, new SongSuggestionDAO());
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -181,28 +185,29 @@ public class CatalogWindow extends JFrame {
         sortOrderCombo = new JComboBox<>(new String[]{"↑ Ascending", "↓ Descending"});
         toolbar.add(sortOrderCombo);
 
-        JButton applyBtn = new JButton("Apply");
-        applyBtn.setBackground(new Color(50, 120, 200));
-        applyBtn.setForeground(Color.BLACK);
-        applyBtn.addActionListener(e -> loadSongs());
-        toolbar.add(applyBtn);
+        if (currentUser.isAdmin()) {
+            // Add song button (admin only)
+            JButton addBtn = new JButton("+ Add Song");
+            addBtn.setBackground(new Color(40, 160, 80));
+            addBtn.setForeground(Color.BLACK);
+            addBtn.addActionListener(e -> openAddSongDialog());
+            toolbar.add(addBtn);
 
-        JButton clearBtn = new JButton("Clear");
-        clearBtn.addActionListener(e -> {
-            searchField.setText("");
-            genreFilter.setSelectedIndex(0);
-            loadSongs();
-        });
-        toolbar.add(clearBtn);
+//            JButton suggestionsBtn = new JButton("Suggestions");
+//            suggestionsBtn.setBackground(new Color(100, 100, 200));
+//            suggestionsBtn.setForeground(Color.BLACK);
+//            suggestionsBtn.addActionListener(e -> openSuggestionsDialog());
+//            toolbar.add(suggestionsBtn);
+        } else {
+            // Suggest song button (replaces Apply/Clear for non-admins)
+//            JButton suggestBtn = new JButton("+ Suggest Song");
+//            suggestBtn.setBackground(new Color(40, 160, 80));
+//            suggestBtn.setForeground(Color.BLACK);
+//            suggestBtn.addActionListener(e -> openAddSongDialog());
+//            toolbar.add(suggestBtn);
+        }
 
-        toolbar.add(new JSeparator(SwingConstants.VERTICAL));
-
-        // Add song button
-        JButton addBtn = new JButton("+ Add Song");
-        addBtn.setBackground(new Color(40, 160, 80));
-        addBtn.setForeground(Color.BLACK);
-        addBtn.addActionListener(e -> openAddSongDialog());
-        toolbar.add(addBtn);
+        // Suggestions button handled above for admins.
 
         // === Table ===
         tableModel = new SongTableModel();
@@ -272,10 +277,10 @@ public class CatalogWindow extends JFrame {
     private JPopupMenu buildContextMenu() {
         JPopupMenu menu = new JPopupMenu();
 
-        JMenuItem editItem = new JMenuItem("✏️  Edit Song");
+        JMenuItem editItem = new JMenuItem("Edit Song");
         editItem.addActionListener(e -> openEditSongDialog());
 
-        JMenuItem deleteItem = new JMenuItem("🗑️  Delete Song");
+        JMenuItem deleteItem = new JMenuItem("Delete Song");
         deleteItem.setForeground(new Color(180, 30, 30));
         deleteItem.addActionListener(e -> deleteSelectedSong());
 
@@ -334,6 +339,16 @@ public class CatalogWindow extends JFrame {
         updateStatus(songs.size());
     }
 
+    private void resetFilters() {
+        searchField.setText("");
+        if (genreFilter.getItemCount() > 0) {
+            genreFilter.setSelectedIndex(0);
+        }
+        sortFieldCombo.setSelectedIndex(0);
+        sortOrderCombo.setSelectedIndex(0);
+        loadSongs();
+    }
+
     private SortField getSortField() {
         return switch (sortFieldCombo.getSelectedIndex()) {
             case 1 -> SortField.ARTIST;
@@ -360,20 +375,32 @@ public class CatalogWindow extends JFrame {
     }
 
     private void openAddSongDialog() {
-        if (!currentUser.isAdmin()) {
-            JOptionPane.showMessageDialog(this,
-                "Permission denied. Admin access required to add songs.",
-                "Permission Denied",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        SongFormDialog dialog = new SongFormDialog(this, null);
-        dialog.setVisible(true);
-        Song result = dialog.getResult();
-        if (result != null) {
-            songDAO.addSong(result);
-            loadSongs();
-            JOptionPane.showMessageDialog(this, "Song added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        if (currentUser.isAdmin()) {
+            SongFormDialog dialog = new SongFormDialog(this, null);
+            dialog.setVisible(true);
+            Song result = dialog.getResult();
+            if (result != null) {
+                SongSubmissionService.Result submitResult = submissionService.submit(currentUser, result);
+                if (submitResult == SongSubmissionService.Result.ADDED) {
+                    loadSongs();
+                    JOptionPane.showMessageDialog(this, "Song added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to add song.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            // Regular user: suggest song
+//            SongFormDialog dialog = new SongFormDialog(this, null, "Suggest a Song", "Submit Suggestion", true);
+//            dialog.setVisible(true);
+//            Song result = dialog.getResult();
+//            if (result != null) {
+//                SongSubmissionService.Result submitResult = submissionService.submit(currentUser, result);
+//                if (submitResult == SongSubmissionService.Result.SUGGESTED) {
+//                    JOptionPane.showMessageDialog(this, "Song suggestion submitted! It will be reviewed by an admin.", "Suggestion Submitted", JOptionPane.INFORMATION_MESSAGE);
+//                } else {
+//                    JOptionPane.showMessageDialog(this, "Failed to submit suggestion.", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
         }
     }
 
@@ -421,6 +448,11 @@ public class CatalogWindow extends JFrame {
             songDAO.deleteSong(song.getId());
             loadSongs();
         }
+    }
+
+    private void openSuggestionsDialog() {
+//        SuggestionsDialog dialog = new SuggestionsDialog(this, currentUser);
+//        dialog.setVisible(true);
     }
 
     private void logout() {

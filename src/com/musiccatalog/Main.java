@@ -7,7 +7,7 @@ import com.musiccatalog.ui.LoginDialog;
 
 import javax.swing.*;
 
-/**
+/** 
  * Application entry point.
  */
 public class Main {
