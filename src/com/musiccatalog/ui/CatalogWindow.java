@@ -124,7 +124,7 @@ public class CatalogWindow extends JFrame {
         header.setBackground(new Color(30, 30, 46));
         header.setBorder(new EmptyBorder(12, 18, 12, 18));
 
-        JLabel title = new JLabel("🎵  Music Catalog");
+        JLabel title = new JLabel("Music Catalog");
         title.setFont(new Font("SansSerif", Font.BOLD, 20));
         title.setForeground(Color.WHITE);
 
@@ -182,7 +182,7 @@ public class CatalogWindow extends JFrame {
         toolbar.add(sortFieldCombo);
 
         // Sort order
-        sortOrderCombo = new JComboBox<>(new String[]{"↑ Ascending", "↓ Descending"});
+        sortOrderCombo = new JComboBox<>(new String[]{"Ascending", "Descending"});
         toolbar.add(sortOrderCombo);
 
         if (currentUser.isAdmin()) {
@@ -303,7 +303,7 @@ public class CatalogWindow extends JFrame {
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setForeground(Color.GRAY);
 
-        JLabel hintLabel = new JLabel("Double-click to edit  •  Right-click for options");
+        JLabel hintLabel = new JLabel("Double-click to edit - Right-click for options");
         hintLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
         hintLabel.setForeground(new Color(160, 160, 180));
 

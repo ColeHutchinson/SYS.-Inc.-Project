@@ -71,7 +71,7 @@ A **Windows build script** (`build.bat`) is also included to simplify the build 
 From the project root directory, run:
 
 ```bat
-build.bat
+.\build.bat
 ```
 
 Alternatively, you can double-click the file in Windows Explorer. The script will automatically:

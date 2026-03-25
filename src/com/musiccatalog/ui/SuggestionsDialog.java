@@ -52,7 +52,7 @@ public class SuggestionsDialog extends JDialog {
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton refreshBtn = new JButton("🔄 Refresh");
+        JButton refreshBtn = new JButton("Refresh");
         refreshBtn.addActionListener(e -> loadSuggestions());
 
         JButton deleteBtn = new JButton("Delete Suggestion");

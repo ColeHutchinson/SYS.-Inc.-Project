@@ -167,11 +167,11 @@ public class PlaylistMenuPanel extends JPanel {
         removeSongBtn.setEnabled(false);
         removeSongBtn.addActionListener(e -> onRemoveSong());
 
-        moveUpBtn = new JButton("▲ Move Up");
+        moveUpBtn = new JButton("Move Up");
         moveUpBtn.setEnabled(false);
         moveUpBtn.addActionListener(e -> onMoveSong(-1));
 
-        moveDownBtn = new JButton("▼ Move Down");
+        moveDownBtn = new JButton("Move Down");
         moveDownBtn.setEnabled(false);
         moveDownBtn.addActionListener(e -> onMoveSong(1));
 
@@ -221,7 +221,7 @@ public class PlaylistMenuPanel extends JPanel {
         // getPlaylistWithSongs populates songs list so getFormattedTotalDuration() works
         Playlist full = playlistDAO.getPlaylistWithSongs(selected.getId());
         if (full != null) {
-            songsPanelLabel.setText(full.getName() + "  —  " + full.getFormattedTotalDuration());
+            songsPanelLabel.setText(full.getName() + " - " + full.getFormattedTotalDuration());
         } else {
             songsPanelLabel.setText(selected.getName());
         }

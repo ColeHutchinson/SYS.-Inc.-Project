@@ -48,10 +48,10 @@ public class SongTableModel extends AbstractTableModel {
             case 0 -> row + 1;
             case 1 -> s.getTitle();
             case 2 -> s.getArtist();
-            case 3 -> s.getAlbum() != null ? s.getAlbum() : "—";
+            case 3 -> s.getAlbum() != null ? s.getAlbum() : "-";
             case 4 -> s.getFormattedDuration();
-            case 5 -> s.getGenre() != null ? s.getGenre() : "—";
-            case 6 -> s.getReleaseYear() > 0 ? s.getReleaseYear() : "—";
+            case 5 -> s.getGenre() != null ? s.getGenre() : "-";
+            case 6 -> s.getReleaseYear() > 0 ? s.getReleaseYear() : "-";
             default -> "";
         };
     }

@@ -29,7 +29,7 @@ public class LoginDialog extends JDialog {
     private JLabel regStatusLabel;
 
     public LoginDialog(Frame parent) {
-        super(parent, "Music Catalog — Login", true);
+        super(parent, "Music Catalog - Login", true);
         buildUI();
         pack();
         setResizable(false);
@@ -42,7 +42,7 @@ public class LoginDialog extends JDialog {
         root.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Header
-        JLabel header = new JLabel("🎵  Music Catalog", SwingConstants.CENTER);
+        JLabel header = new JLabel("Music Catalog", SwingConstants.CENTER);
         header.setFont(new Font("SansSerif", Font.BOLD, 22));
         header.setForeground(new Color(50, 120, 200));
         header.setBorder(new EmptyBorder(10, 0, 15, 0));

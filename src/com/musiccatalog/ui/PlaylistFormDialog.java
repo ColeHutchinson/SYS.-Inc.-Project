@@ -26,7 +26,7 @@ public class PlaylistFormDialog extends JDialog {
         this(parent, playlistDAO, userId, null);
     }
 
-    /** Edit mode — pass the existing playlist to prefill fields */
+    /** Edit mode - pass the existing playlist to prefill fields */
     public PlaylistFormDialog(Frame parent, PlaylistDAO playlistDAO, int userId, Playlist playlistToEdit) {
         super(parent, playlistToEdit == null ? "New Playlist" : "Edit Playlist", true);
         this.playlistDAO = playlistDAO;
