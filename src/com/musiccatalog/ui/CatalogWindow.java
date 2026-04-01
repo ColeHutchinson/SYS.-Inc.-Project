@@ -1,5 +1,6 @@
 package com.musiccatalog.ui;
 
+import com.musiccatalog.dao.ListenLaterDAO;
 import com.musiccatalog.dao.PlaylistDAO;
 import com.musiccatalog.dao.SongDAO;
 import com.musiccatalog.dao.SongDAO.SortField;
@@ -26,12 +27,14 @@ public class CatalogWindow extends JFrame {
     private final User currentUser;
     private final SongDAO songDAO = new SongDAO();
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
+    private final ListenLaterDAO listenLaterDAO = new ListenLaterDAO();
     private final SongSubmissionService submissionService =
         new SongSubmissionService(songDAO, new SongSuggestionDAO());
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private PlaylistMenuPanel playlistMenuPanel;
+    private ListenLaterPanel listenLaterPanel;
 
     private SongTableModel tableModel;
     private JTable songTable;
@@ -67,8 +70,10 @@ public class CatalogWindow extends JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         playlistMenuPanel = new PlaylistMenuPanel(currentUser, playlistDAO);
+        listenLaterPanel = new ListenLaterPanel(currentUser, listenLaterDAO);
         cardPanel.add(buildToolbar(), "library");
         cardPanel.add(playlistMenuPanel, "playlists");
+        cardPanel.add(listenLaterPanel, "listenLater");
         root.add(cardPanel, BorderLayout.CENTER);
 
         root.add(buildStatusBar(), BorderLayout.SOUTH);
@@ -82,25 +87,38 @@ public class CatalogWindow extends JFrame {
 
         JButton libraryBtn = new JButton("Song Library");
         JButton playlistsBtn = new JButton("Playlist Menu");
+        JButton listenLaterBtn = new JButton("Listen Later");
 
         styleNavButton(libraryBtn, true);
         styleNavButton(playlistsBtn, false);
+        styleNavButton(listenLaterBtn, false);
 
         libraryBtn.addActionListener(e -> {
             cardLayout.show(cardPanel, "library");
             styleNavButton(libraryBtn, true);
             styleNavButton(playlistsBtn, false);
+            styleNavButton(listenLaterBtn, false);
         });
 
         playlistsBtn.addActionListener(e -> {
             cardLayout.show(cardPanel, "playlists");
             styleNavButton(playlistsBtn, true);
             styleNavButton(libraryBtn, false);
+            styleNavButton(listenLaterBtn, false);
             playlistMenuPanel.refresh();
+        });
+
+        listenLaterBtn.addActionListener(e -> {
+            cardLayout.show(cardPanel, "listenLater");
+            styleNavButton(listenLaterBtn, true);
+            styleNavButton(libraryBtn, false);
+            styleNavButton(playlistsBtn, false);
+            listenLaterPanel.refresh();
         });
 
         navBar.add(libraryBtn);
         navBar.add(playlistsBtn);
+        navBar.add(listenLaterBtn);
         return navBar;
     }
 

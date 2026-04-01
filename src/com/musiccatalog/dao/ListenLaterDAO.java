@@ -62,7 +62,7 @@ public class ListenLaterDAO {
 
         String sql = """
             SELECT s.id, s.title, s.artist, s.album, s.duration_seconds,
-                   s.genre, s.release_year, s.added_at
+                   s.genre, s.release_year, ll.added_at
             FROM songs s
             INNER JOIN listen_later ll ON s.id = ll.song_id
             WHERE ll.user_id = ?
