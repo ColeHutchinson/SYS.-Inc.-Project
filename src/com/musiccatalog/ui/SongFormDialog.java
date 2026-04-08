@@ -110,51 +110,84 @@ public class SongFormDialog extends JDialog {
     }
 
     private void doSave(Song original) {
-        String title = titleField.getText().trim();
-        String artist = artistField.getText().trim();
-        String album = suggestionOnly ? "" : albumField.getText().trim();
-        String genre = suggestionOnly ? "" : genreField.getText().trim();
-        String yearStr = suggestionOnly ? "" : yearField.getText().trim();
-        String minsStr = suggestionOnly ? "" : minutesField.getText().trim();
-        String secsStr = suggestionOnly ? "" : secondsField.getText().trim();
-
-        if (title.isEmpty() || artist.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Title and Artist are required.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        String validationError = getValidationError();
+        if (validationError != null) {
+            JOptionPane.showMessageDialog(this, validationError, "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int durationSeconds = 0;
+        String title = titleField.getText().trim();
+        String artist = artistField.getText().trim();
+        String album = suggestionOnly ? "" : albumField.getText().trim();
+
         int year = 0;
+        int durationSeconds = 0;
         if (!suggestionOnly) {
-            try {
-                int mins = minsStr.isEmpty() ? 0 : Integer.parseInt(minsStr);
-                int secs = secsStr.isEmpty() ? 0 : Integer.parseInt(secsStr);
-                durationSeconds = mins * 60 + secs;
-                if (durationSeconds <= 0) throw new NumberFormatException();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid duration.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            String genre = genreField.getText().trim();
+            String yearStr = yearField.getText().trim();
+            int mins = Integer.parseInt(minutesField.getText().trim());
+            int secs = Integer.parseInt(secondsField.getText().trim());
+            durationSeconds = mins * 60 + secs;
 
             if (!yearStr.isEmpty()) {
-                try {
-                    year = Integer.parseInt(yearStr);
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "Please enter a valid year.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+                year = Integer.parseInt(yearStr);
+            }
+
+            result = new Song(
+                original != null ? original.getId() : 0,
+                title, artist,
+                album.isEmpty() ? null : album,
+                durationSeconds,
+                genre.isEmpty() ? null : genre,
+                year, null
+            );
+        } else {
+            result = new Song(
+                original != null ? original.getId() : 0,
+                title, artist,
+                null,
+                0,
+                null,
+                0, null
+            );
+        }
+
+        dispose();
+    }
+
+    private String getValidationError() {
+        String title = titleField.getText().trim();
+        String artist = artistField.getText().trim();
+        if (title.isEmpty() || artist.isEmpty()) {
+            return "Title and Artist are required.";
+        }
+
+        if (suggestionOnly) {
+            return null;
+        }
+
+        String minsStr = minutesField.getText().trim();
+        String secsStr = secondsField.getText().trim();
+        try {
+            int mins = minsStr.isEmpty() ? 0 : Integer.parseInt(minsStr);
+            int secs = secsStr.isEmpty() ? 0 : Integer.parseInt(secsStr);
+            if ((mins * 60) + secs <= 0) {
+                return "Please enter a valid duration.";
+            }
+        } catch (NumberFormatException e) {
+            return "Please enter a valid duration.";
+        }
+
+        String yearStr = yearField.getText().trim();
+        if (!yearStr.isEmpty()) {
+            try {
+                Integer.parseInt(yearStr);
+            } catch (NumberFormatException e) {
+                return "Please enter a valid year.";
             }
         }
 
-        result = new Song(
-            original != null ? original.getId() : 0,
-            title, artist,
-            (suggestionOnly || album.isEmpty()) ? null : album,
-            durationSeconds,
-            (suggestionOnly || genre.isEmpty()) ? null : genre,
-            year, null
-        );
-        dispose();
+        return null;
     }
 
     public Song getResult() {

@@ -24,106 +24,104 @@ public class SongSuggestionDAO {
      * Add a new song suggestion.
      */
     public boolean addSuggestion(SongSuggestion suggestion) {
-//        String sql = """
-//            INSERT INTO song_suggestions (title, artist, album, duration_seconds, genre, release_year, suggested_by, status)
-//            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//        """;
-//        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-//            ps.setString(1, suggestion.getTitle());
-//            ps.setString(2, suggestion.getArtist());
-//            ps.setString(3, suggestion.getAlbum());
-//            ps.setInt(4, suggestion.getDurationSeconds());
-//            ps.setString(5, suggestion.getGenre());
-//            if (suggestion.getReleaseYear() != null) {
-//                ps.setInt(6, suggestion.getReleaseYear());
-//            } else {
-//                ps.setNull(6, Types.INTEGER);
-//            }
-//            ps.setInt(7, suggestion.getSuggestedBy());
-//            String status = suggestion.getStatus() != null ? suggestion.getStatus() : Status.PENDING.name();
-//            ps.setString(8, status);
-//            ps.executeUpdate();
-//            return true;
-//        } catch (SQLException e) {
-//            System.err.println("Error adding suggestion: " + e.getMessage());
-//            return false;
-//        }
-        return false;
+        String sql = """
+            INSERT INTO song_suggestions (title, artist, album, duration_seconds, genre, release_year, suggested_by, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, suggestion.getTitle());
+            ps.setString(2, suggestion.getArtist());
+            ps.setString(3, suggestion.getAlbum());
+            ps.setInt(4, suggestion.getDurationSeconds());
+            ps.setString(5, suggestion.getGenre());
+            if (suggestion.getReleaseYear() != null) {
+                ps.setInt(6, suggestion.getReleaseYear());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
+            ps.setInt(7, suggestion.getSuggestedBy());
+            ps.setString(8, suggestion.getStatus() != null ? suggestion.getStatus() : Status.PENDING.name());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error adding suggestion: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
      * Get all suggestions with optional status filter.
      */
     public List<SongSuggestion> findAll(Status status) {
-//        String sql = "SELECT * FROM song_suggestions";
-//        if (status != null) {
-//            sql += " WHERE status = ?";
-//        }
-//        sql += " ORDER BY suggested_at DESC";
-//
-//        List<SongSuggestion> suggestions = new ArrayList<>();
-//        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-//            if (status != null) {
-//                ps.setString(1, status.name());
-//            }
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//                suggestions.add(mapRow(rs));
-//            }
-//        } catch (SQLException e) {
-//            System.err.println("Error finding suggestions: " + e.getMessage());
-//        }
-        return new ArrayList<>();
+        String sql = "SELECT * FROM song_suggestions";
+        if (status != null) {
+            sql += " WHERE status = ?";
+        }
+        sql += " ORDER BY suggested_at DESC, id DESC";
+
+        List<SongSuggestion> suggestions = new ArrayList<>();
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            if (status != null) {
+                ps.setString(1, status.name());
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    suggestions.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding suggestions: " + e.getMessage());
+        }
+        return suggestions;
     }
 
     /**
      * Get suggestions by user.
      */
     public List<SongSuggestion> findByUser(int userId) {
-//        String sql = "SELECT * FROM song_suggestions WHERE suggested_by = ? ORDER BY suggested_at DESC";
-//        List<SongSuggestion> suggestions = new ArrayList<>();
-//        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-//            ps.setInt(1, userId);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//                suggestions.add(mapRow(rs));
-//            }
-//        } catch (SQLException e) {
-//            System.err.println("Error finding user suggestions: " + e.getMessage());
-//        }
-        return new ArrayList<>();
+        String sql = "SELECT * FROM song_suggestions WHERE suggested_by = ? ORDER BY suggested_at DESC, id DESC";
+        List<SongSuggestion> suggestions = new ArrayList<>();
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    suggestions.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding user suggestions: " + e.getMessage());
+        }
+        return suggestions;
     }
 
     /**
      * Delete a suggestion.
      */
     public boolean deleteSuggestion(int id) {
-//        String sql = "DELETE FROM song_suggestions WHERE id = ?";
-//        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-//            ps.setInt(1, id);
-//            ps.executeUpdate();
-//            return true;
-//        } catch (SQLException e) {
-//            System.err.println("Error deleting suggestion: " + e.getMessage());
-//            return false;
-//        }
-        return false;
+        String sql = "DELETE FROM song_suggestions WHERE id = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting suggestion: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
      * Get suggestion by id.
      */
     public SongSuggestion findById(int id) {
-//        String sql = "SELECT * FROM song_suggestions WHERE id = ?";
-//        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-//            ps.setInt(1, id);
-//            ResultSet rs = ps.executeQuery();
-//            if (rs.next()) {
-//                return mapRow(rs);
-//            }
-//        } catch (SQLException e) {
-//            System.err.println("Error finding suggestion: " + e.getMessage());
-//        }
+        String sql = "SELECT * FROM song_suggestions WHERE id = ?";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding suggestion: " + e.getMessage());
+        }
         return null;
     }
 

@@ -2,6 +2,7 @@ package com.musiccatalog.IntegrationTests;
 
 import com.musiccatalog.dao.SongDAO;
 import com.musiccatalog.dao.SongSuggestionDAO;
+import com.musiccatalog.dao.UserDAO;
 import com.musiccatalog.db.DatabaseManager;
 import com.musiccatalog.model.Song;
 import com.musiccatalog.model.SongSuggestion;
@@ -33,8 +34,8 @@ public class SongSubmissionServiceUserRoleTest {
         suggestionDAO = new SongSuggestionDAO();
         submissionService = new SongSubmissionService(songDAO, suggestionDAO);
 
-        // demo user has role USER (id = 2, as seeded in DatabaseManager)
-        demoUser = new User(2, "demo", "", "demo@musiccatalog.com", null, "USER");
+        demoUser = new UserDAO().findByUsername("demo");
+        assertNotNull(demoUser, "Setup: expected seeded demo user");
         songCountBefore = songDAO.countAll();
     }
 

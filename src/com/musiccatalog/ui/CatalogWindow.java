@@ -88,38 +88,55 @@ public class CatalogWindow extends JFrame {
         JButton libraryBtn = new JButton("Song Library");
         JButton playlistsBtn = new JButton("Playlist Menu");
         JButton listenLaterBtn = new JButton("Listen Later");
+        JButton suggestionsBtn = currentUser.isAdmin() ? new JButton("Song Suggestions") : null;
 
         styleNavButton(libraryBtn, true);
         styleNavButton(playlistsBtn, false);
         styleNavButton(listenLaterBtn, false);
+        if (suggestionsBtn != null) {
+            styleNavButton(suggestionsBtn, false);
+        }
 
         libraryBtn.addActionListener(e -> {
             cardLayout.show(cardPanel, "library");
-            styleNavButton(libraryBtn, true);
-            styleNavButton(playlistsBtn, false);
-            styleNavButton(listenLaterBtn, false);
+            setActiveNavButton(libraryBtn, playlistsBtn, listenLaterBtn, suggestionsBtn);
         });
 
         playlistsBtn.addActionListener(e -> {
             cardLayout.show(cardPanel, "playlists");
-            styleNavButton(playlistsBtn, true);
-            styleNavButton(libraryBtn, false);
-            styleNavButton(listenLaterBtn, false);
+            setActiveNavButton(playlistsBtn, libraryBtn, listenLaterBtn, suggestionsBtn);
             playlistMenuPanel.refresh();
         });
 
         listenLaterBtn.addActionListener(e -> {
             cardLayout.show(cardPanel, "listenLater");
-            styleNavButton(listenLaterBtn, true);
-            styleNavButton(libraryBtn, false);
-            styleNavButton(playlistsBtn, false);
+            setActiveNavButton(listenLaterBtn, libraryBtn, playlistsBtn, suggestionsBtn);
             listenLaterPanel.refresh();
         });
+
+        if (suggestionsBtn != null) {
+            suggestionsBtn.addActionListener(e -> {
+                openSuggestionsDialog();
+                setActiveNavButton(libraryBtn, playlistsBtn, listenLaterBtn, suggestionsBtn);
+            });
+        }
 
         navBar.add(libraryBtn);
         navBar.add(playlistsBtn);
         navBar.add(listenLaterBtn);
+        if (suggestionsBtn != null) {
+            navBar.add(suggestionsBtn);
+        }
         return navBar;
+    }
+
+    private void setActiveNavButton(JButton activeButton, JButton... buttons) {
+        styleNavButton(activeButton, true);
+        for (JButton button : buttons) {
+            if (button != null && button != activeButton) {
+                styleNavButton(button, false);
+            }
+        }
     }
 
     private void styleNavButton(JButton btn, boolean active) {
@@ -469,8 +486,16 @@ public class CatalogWindow extends JFrame {
     }
 
     private void openSuggestionsDialog() {
-//        SuggestionsDialog dialog = new SuggestionsDialog(this, currentUser);
-//        dialog.setVisible(true);
+        if (!currentUser.isAdmin()) {
+            JOptionPane.showMessageDialog(this,
+                "Permission denied. Admin access required to view suggestions.",
+                "Permission Denied",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        SuggestionsDialog dialog = new SuggestionsDialog(this, currentUser);
+        dialog.setVisible(true);
     }
 
     private void logout() {

@@ -82,6 +82,20 @@ public class SongFormDialogTest {
         });
     }
 
+    private String invokeValidationError() throws Exception {
+        Method m = SongFormDialog.class.getDeclaredMethod("getValidationError");
+        m.setAccessible(true);
+        final String[] result = new String[1];
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                result[0] = (String) m.invoke(dialog);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return result[0];
+    }
+
     private <T> T getField(String name, Class<T> type) {
         try {
             Field f = SongFormDialog.class.getDeclaredField(name);
@@ -171,7 +185,7 @@ public class SongFormDialogTest {
     public void testSaveWithEmptyTitleDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("", "Artist", "Album", "Pop", "2020", "3", "30");
-        invokeDoSave(null);
+        assertEquals("Title and Artist are required.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when title is empty");
     }
@@ -180,7 +194,7 @@ public class SongFormDialogTest {
     public void testSaveWithEmptyArtistDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("Title", "", "Album", "Pop", "2020", "3", "30");
-        invokeDoSave(null);
+        assertEquals("Title and Artist are required.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when artist is empty");
     }
@@ -189,7 +203,7 @@ public class SongFormDialogTest {
     public void testSaveWithZeroDurationDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("Title", "Artist", "Album", "Pop", "2020", "0", "0");
-        invokeDoSave(null);
+        assertEquals("Please enter a valid duration.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when duration is 0");
     }
@@ -198,7 +212,7 @@ public class SongFormDialogTest {
     public void testSaveWithEmptyDurationDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("Title", "Artist", "Album", "Pop", "2020", "", "");
-        invokeDoSave(null);
+        assertEquals("Please enter a valid duration.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when duration fields are empty");
     }
@@ -207,7 +221,7 @@ public class SongFormDialogTest {
     public void testSaveWithNonNumericDurationDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("Title", "Artist", "Album", "Pop", "2020", "abc", "xyz");
-        invokeDoSave(null);
+        assertEquals("Please enter a valid duration.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when duration is non-numeric");
     }
@@ -216,7 +230,7 @@ public class SongFormDialogTest {
     public void testSaveWithNonNumericYearDoesNotSetResult() throws Exception {
         buildAddDialog();
         setFullFields("Title", "Artist", "Album", "Pop", "notayear", "3", "30");
-        invokeDoSave(null);
+        assertEquals("Please enter a valid year.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when year is non-numeric");
     }
@@ -323,7 +337,7 @@ public class SongFormDialogTest {
     public void testSuggestionOnlyModeWithEmptyTitleDoesNotSetResult() throws Exception {
         buildSuggestionDialog();
         setSuggestionFields("", "Some Artist");
-        invokeDoSave(null);
+        assertEquals("Title and Artist are required.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when title is empty in suggestion mode");
     }
@@ -332,7 +346,7 @@ public class SongFormDialogTest {
     public void testSuggestionOnlyModeWithEmptyArtistDoesNotSetResult() throws Exception {
         buildSuggestionDialog();
         setSuggestionFields("Some Title", "");
-        invokeDoSave(null);
+        assertEquals("Title and Artist are required.", invokeValidationError());
 
         assertNull(dialog.getResult(), "Result should be null when artist is empty in suggestion mode");
     }

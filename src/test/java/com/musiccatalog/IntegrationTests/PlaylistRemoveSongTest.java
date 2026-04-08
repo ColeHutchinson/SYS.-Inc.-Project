@@ -1,9 +1,12 @@
 package com.musiccatalog.IntegrationTests;
 
 import com.musiccatalog.dao.PlaylistDAO;
+import com.musiccatalog.dao.SongDAO;
+import com.musiccatalog.dao.UserDAO;
 import com.musiccatalog.db.DatabaseManager;
 import com.musiccatalog.model.Playlist;
 import com.musiccatalog.model.PlaylistSong;
+import com.musiccatalog.model.User;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -16,33 +19,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PlaylistRemoveSongTest {
 
-    private static final int DEMO_USER_ID = 2;
-    private static final int SONG_A = 1; // will stay  — position 1
-    private static final int SONG_B = 2; // will be removed
-    private static final int SONG_C = 3; // will stay  — should compact to position 2
+    private static final String SONG_A_TITLE = "Bohemian Rhapsody";
+    private static final String SONG_B_TITLE = "Hotel California";
+    private static final String SONG_C_TITLE = "Stairway to Heaven";
 
     private static PlaylistDAO playlistDAO;
+    private static SongDAO songDAO;
+    private static int demoUserId;
+    private static int songAId;
+    private static int songBId;
+    private static int songCId;
     private static int playlistId;
 
     @BeforeAll
     static void setUp() {
         DatabaseManager.getInstance().initializeDatabase();
         playlistDAO = new PlaylistDAO();
+        songDAO = new SongDAO();
 
-        Playlist playlist = playlistDAO.createPlaylist(DEMO_USER_ID, "IT-03 Remove Test", null);
+        User demoUser = new UserDAO().findByUsername("demo");
+        assertNotNull(demoUser, "Setup: expected seeded demo user");
+        demoUserId = demoUser.getId();
+        songAId = getSongIdByTitle(SONG_A_TITLE);
+        songBId = getSongIdByTitle(SONG_B_TITLE);
+        songCId = getSongIdByTitle(SONG_C_TITLE);
+
+        Playlist playlist = playlistDAO.createPlaylist(demoUserId, "IT-03 Remove Test", null);
         assertNotNull(playlist, "Setup: createPlaylist() must succeed");
         playlistId = playlist.getId();
 
-        assertTrue(playlistDAO.addSongToPlaylist(playlistId, SONG_A), "Setup: add song A at pos 1");
-        assertTrue(playlistDAO.addSongToPlaylist(playlistId, SONG_B), "Setup: add song B at pos 2");
-        assertTrue(playlistDAO.addSongToPlaylist(playlistId, SONG_C), "Setup: add song C at pos 3");
+        assertTrue(playlistDAO.addSongToPlaylist(playlistId, songAId), "Setup: add song A at pos 1");
+        assertTrue(playlistDAO.addSongToPlaylist(playlistId, songBId), "Setup: add song B at pos 2");
+        assertTrue(playlistDAO.addSongToPlaylist(playlistId, songCId), "Setup: add song C at pos 3");
     }
 
     @Test
     @Order(1)
     @DisplayName("IT-03-TB Step 1: removeSongFromPlaylist() returns true for song B")
     void testRemoveSong() {
-        boolean removed = playlistDAO.removeSongFromPlaylist(playlistId, SONG_B);
+        boolean removed = playlistDAO.removeSongFromPlaylist(playlistId, songBId);
         assertTrue(removed, "removeSongFromPlaylist() should return true when the song exists");
     }
 
@@ -65,7 +80,7 @@ public class PlaylistRemoveSongTest {
 
         // Song B must not be present
         boolean songBPresent = entries.stream()
-                .anyMatch(e -> e.getSong().getId() == SONG_B);
+                .anyMatch(e -> e.getSong().getId() == songBId);
         assertFalse(songBPresent, "Song B should not be in the playlist after removal");
     }
 
@@ -74,5 +89,13 @@ public class PlaylistRemoveSongTest {
         if (playlistId > 0) {
             playlistDAO.deletePlaylist(playlistId);
         }
+    }
+
+    private static int getSongIdByTitle(String title) {
+        return songDAO.search(title, SongDAO.SortField.TITLE, SongDAO.SortOrder.ASC).stream()
+            .filter(song -> title.equals(song.getTitle()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Setup: expected seeded song " + title))
+            .getId();
     }
 }

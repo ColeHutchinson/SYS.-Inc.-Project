@@ -42,7 +42,6 @@ public class SongSubmissionService {
         suggestion.setReleaseYear(year > 0 ? year : null);
         suggestion.setSuggestedBy(user.getId());
         suggestion.setStatus(SongSuggestionDAO.Status.PENDING.name());
-        //return suggestionDAO.addSuggestion(suggestion) ? Result.SUGGESTED : Result.FAILED;
-        return Result.FAILED;
+        return suggestionDAO.addSuggestion(suggestion) ? Result.SUGGESTED : Result.FAILED;
     }
 }

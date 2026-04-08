@@ -1,8 +1,10 @@
 package com.musiccatalog.IntegrationTests;
 
 import com.musiccatalog.dao.SongSuggestionDAO;
+import com.musiccatalog.dao.UserDAO;
 import com.musiccatalog.db.DatabaseManager;
 import com.musiccatalog.model.SongSuggestion;
+import com.musiccatalog.model.User;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,15 +15,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SongSuggestionDeleteTest {
 
-    private static final int DEMO_USER_ID = 2;
-
     private static SongSuggestionDAO suggestionDAO;
+    private static int demoUserId;
     private static int suggestionId;
 
     @BeforeAll
     static void setUp() {
         DatabaseManager.getInstance().initializeDatabase();
         suggestionDAO = new SongSuggestionDAO();
+        User demoUser = new UserDAO().findByUsername("demo");
+        assertNotNull(demoUser, "Setup: expected seeded demo user");
+        demoUserId = demoUser.getId();
 
         // Insert a suggestion to delete in the test
         SongSuggestion suggestion = new SongSuggestion();
@@ -31,14 +35,14 @@ public class SongSuggestionDeleteTest {
         suggestion.setDurationSeconds(180);
         suggestion.setGenre("Pop");
         suggestion.setReleaseYear(2023);
-        suggestion.setSuggestedBy(DEMO_USER_ID);
+        suggestion.setSuggestedBy(demoUserId);
         suggestion.setStatus(SongSuggestionDAO.Status.PENDING.name());
 
         boolean added = suggestionDAO.addSuggestion(suggestion);
         assertTrue(added, "Setup: addSuggestion() must succeed to seed the test record");
 
         // Retrieve the generated id
-        suggestionId = suggestionDAO.findByUser(DEMO_USER_ID).stream()
+        suggestionId = suggestionDAO.findByUser(demoUserId).stream()
                 .filter(s -> "Song To Delete".equals(s.getTitle()))
                 .mapToInt(SongSuggestion::getId)
                 .findFirst()

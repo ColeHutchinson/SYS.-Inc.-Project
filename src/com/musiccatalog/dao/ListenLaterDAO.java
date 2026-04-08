@@ -66,7 +66,7 @@ public class ListenLaterDAO {
             FROM songs s
             INNER JOIN listen_later ll ON s.id = ll.song_id
             WHERE ll.user_id = ?
-            ORDER BY ll.added_at DESC
+            ORDER BY ll.added_at DESC, ll.rowid DESC
         """;
 
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
