@@ -235,11 +235,11 @@ public class CatalogWindow extends JFrame {
 //            toolbar.add(suggestionsBtn);
         } else {
             // Suggest song button (replaces Apply/Clear for non-admins)
-//            JButton suggestBtn = new JButton("+ Suggest Song");
-//            suggestBtn.setBackground(new Color(40, 160, 80));
-//            suggestBtn.setForeground(Color.BLACK);
-//            suggestBtn.addActionListener(e -> openAddSongDialog());
-//            toolbar.add(suggestBtn);
+            JButton suggestBtn = new JButton("+ Suggest Song");
+            suggestBtn.setBackground(new Color(40, 160, 80));
+            suggestBtn.setForeground(Color.BLACK);
+            suggestBtn.addActionListener(e -> openAddSongDialog());
+            toolbar.add(suggestBtn);
         }
 
         // Suggestions button handled above for admins.
@@ -425,17 +425,17 @@ public class CatalogWindow extends JFrame {
             }
         } else {
             // Regular user: suggest song
-//            SongFormDialog dialog = new SongFormDialog(this, null, "Suggest a Song", "Submit Suggestion", true);
-//            dialog.setVisible(true);
-//            Song result = dialog.getResult();
-//            if (result != null) {
-//                SongSubmissionService.Result submitResult = submissionService.submit(currentUser, result);
-//                if (submitResult == SongSubmissionService.Result.SUGGESTED) {
-//                    JOptionPane.showMessageDialog(this, "Song suggestion submitted! It will be reviewed by an admin.", "Suggestion Submitted", JOptionPane.INFORMATION_MESSAGE);
-//                } else {
-//                    JOptionPane.showMessageDialog(this, "Failed to submit suggestion.", "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
+            SongFormDialog dialog = new SongFormDialog(this, null, "Suggest a Song", "Submit Suggestion", true);
+            dialog.setVisible(true);
+            Song result = dialog.getResult();
+            if (result != null) {
+                SongSubmissionService.Result submitResult = submissionService.submit(currentUser, result);
+                if (submitResult == SongSubmissionService.Result.SUGGESTED) {
+                    JOptionPane.showMessageDialog(this, "Song suggestion submitted! It will be reviewed by an admin.", "Suggestion Submitted", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to submit suggestion.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 
